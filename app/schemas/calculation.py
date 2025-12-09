@@ -36,6 +36,8 @@ class CalculationType(str, Enum):
     SUBTRACTION = "subtraction"
     MULTIPLICATION = "multiplication"
     DIVISION = "division"
+    POWER = "power"
+
 
 class CalculationBase(BaseModel):
     """
@@ -49,7 +51,7 @@ class CalculationBase(BaseModel):
     """
     type: CalculationType = Field(
         ...,  # The ... means this field is required
-        description="Type of calculation (addition, subtraction, multiplication, division)",
+        description="Type of calculation (addition, subtraction, multiplication, division, power or modulus)",
         example="addition"
     )
     inputs: List[float] = Field(
