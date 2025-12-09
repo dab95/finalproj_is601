@@ -4,7 +4,7 @@
 Module: operations.py
 
 This module contains basic arithmetic functions that perform addition, subtraction,
-multiplication, division and power of two numbers. These functions are foundational for
+multiplication, division, power, and modulus of two numbers. These functions are foundational for
 building more complex applications, such as calculators or financial tools.
 
 Functions:
@@ -13,6 +13,7 @@ Functions:
 - multiply(a: Union[int, float], b: Union[int, float]) -> Union[int, float]: Returns the product of a and b.
 - divide(a: Union[int, float], b: Union[int, float]) -> float: Returns the quotient when a is divided by b. Raises ValueError if b is zero.
 - power(a: Union[int, float], b: Union[int, float]) -> Union[int, float]: Returns a raised to the power of b.
+- modulus(a: Union[int, float], b: Union[int, float]) -> Union[int, float]: Returns the remainder when a is divided by b. Raises ValueError if b is zero.
 
 Usage:
 These functions can be imported and used in other modules or integrated into APIs
@@ -139,4 +140,37 @@ def power(a: Number, b: Number) -> Number:
     """
     # Perform Power of a and b
     result = a ** b
+    return result
+
+def modulus(a: Number, b: Number) -> float:
+    """
+    Divide the first number by the second and return the remainder.
+
+    Parameters:
+    - a (int or float): The dividend.
+    - b (int or float): The divisor.
+
+    Returns:
+    - float: The remainder of a divided by b.
+
+    Raises:
+    - ValueError: If b is zero, as division by zero is undefined.
+
+    Example:
+    >>> modulus(6, 3)
+    0.0
+    >>> modulus(5.5, 2)
+    1.5
+    >>> divide(5, 0)
+    Traceback (most recent call last):
+        ...
+    ValueError: Cannot divide by zero!
+    """
+    # Check if the divisor is zero to prevent division by zero
+    if b == 0:
+        # Raise a ValueError with a descriptive message
+        raise ValueError("Cannot divide by zero!")
+    
+    # Perform division of a by b and return the result as a float
+    result = a % b
     return result
