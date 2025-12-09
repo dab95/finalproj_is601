@@ -118,3 +118,24 @@ def divide(a: Number, b: Number) -> float:
     # Perform division of a by b and return the result as a float
     result = a / b
     return result
+
+def power(a: Number, b: Number) -> Number:
+    """
+    Multiply a number b times and return the result. 
+
+    Parameters:
+    - a (int or float): The first number to multiply.
+    - b (int or float): The number of times a is multiplied by itself.
+
+    Returns:
+    - int or float: The power of a and b.
+
+    Example:
+    >>> power(2, 3)
+    8
+    >>> power(1.5, 2)
+    2.25
+    """
+    # Perform Power of a and b
+    result = a ** b
+    return result
