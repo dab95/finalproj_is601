@@ -297,6 +297,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       case 'power':
         result = inputs.reduce((a, b, i) => i === 0 ? a : a ** b, inputs[0]);
         break;
+      case 'modulus':
+        // Avoid modulus by zero
+        if (inputs.some((value, index) => index > 0 && value === 0)) {
+          return 'Cannot modulus by zero';
+        }
+        result = inputs.reduce((a, b, i) => i === 0 ? a : a % b, inputs[0]);
+        break;
       default:
         return 'Unknown operation';
     }
@@ -335,6 +342,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         break;
       case 'power':
         operator = '^';
+        break;
+      case 'modulus':
+        operator = '%';
         break;
       default:
         operator = '?';
