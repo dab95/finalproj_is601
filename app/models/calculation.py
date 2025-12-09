@@ -11,10 +11,11 @@ It demonstrates several advanced patterns:
 4. Single Responsibility Principle - Each calculation type does one thing
 
 These models are designed for a calculator application that supports
-basic mathematical operations: addition, subtraction, multiplication, and division.
+basic mathematical operations: addition, subtraction, multiplication, division, exponentiation and modulus.
 """
 
 from datetime import datetime
+from tokenize import Exponent
 import uuid
 from typing import List
 from sqlalchemy import Column, String, DateTime, ForeignKey, JSON, Float
@@ -178,6 +179,7 @@ class AbstractCalculation:
             'subtraction': Subtraction,
             'multiplication': Multiplication,
             'division': Division,
+            'power': Power,
         }
         calculation_class = calculation_classes.get(calculation_type.lower())
         if not calculation_class:
@@ -353,4 +355,35 @@ class Division(Calculation):
             if value == 0:
                 raise ValueError("Cannot divide by zero.")
             result /= value
+        return result
+
+class Power(Calculation):
+    """
+    Power calculation subclass.
+    
+    Implements Power of multiple numbers.
+    Examples:
+        [2, 3, 2] -> 2 ** 3 ** 2 = 256
+        [9, 0.5] -> 9 ** 0.5 = 3.0
+        [9, 0.5] -> 10 ** -1 = 0.1
+    """
+    __mapper_args__ = {"polymorphic_identity": "power"}
+
+    def get_result(self) -> float:
+        """
+        Calculate the product of all input values.
+        
+        Returns:
+            float: The product of all input values
+            
+        Raises:
+            ValueError: If inputs are not a list or if fewer than 2 numbers provided
+        """
+        if not isinstance(self.inputs, list):
+            raise ValueError("Inputs must be a list of numbers.")
+        if len(self.inputs) < 2:
+            raise ValueError("Inputs must be a list with at least two numbers.")
+        result = self.inputs[-1]
+        for value in reversed(self.inputs[:-1]):
+            result =  value ** result
         return result
