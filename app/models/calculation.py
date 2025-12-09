@@ -180,6 +180,7 @@ class AbstractCalculation:
             'multiplication': Multiplication,
             'division': Division,
             'power': Power,
+            'modulus': Modulus,
         }
         calculation_class = calculation_classes.get(calculation_type.lower())
         if not calculation_class:
@@ -386,4 +387,44 @@ class Power(Calculation):
         result = self.inputs[-1]
         for value in reversed(self.inputs[:-1]):
             result =  value ** result
+        return result
+
+class Modulus(Calculation):
+    """
+    Modulus calculation subclass.
+    
+    Implements sequential modulo operation starting from the first number.
+    Examples:
+        [10, 4, 2] -> 10 % 4 % 1 = 0
+        [100, 7, 5] -> 100 % 7 % 5 = 2
+        
+    Special case handling:
+        - Any value Modulus zero raises a ValueError
+    """
+    __mapper_args__ = {"polymorphic_identity": "modulus"}
+
+    def get_result(self) -> float:
+        """
+        Calculate the result of modulus operation by divinding input values and returning the remainder.
+
+        Takes the first number and divides by remaining numbers, taking the remainder each time to perfom the 
+        next modulus opertation, retuning final remainder.
+        Includes validation to prevent mod zero.
+        
+        Returns:
+            float: The result of the modulus sequence
+            
+        Raises:
+            ValueError: If inputs are not a list, if fewer than 2 numbers provided,
+                        or if attempting to mod by zero
+        """
+        if not isinstance(self.inputs, list):
+            raise ValueError("Inputs must be a list of numbers.")
+        if len(self.inputs) < 2:
+            raise ValueError("Inputs must be a list with at least two numbers.")
+        result = self.inputs[0]
+        for value in self.inputs[1:]:
+            if value == 0:
+                raise ValueError("Cannot divide by zero.")
+            result %= value
         return result
