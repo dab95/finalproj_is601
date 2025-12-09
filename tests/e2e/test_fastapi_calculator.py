@@ -253,6 +253,31 @@ def test_create_calculation_power(base_url: str):
     # Expected result: 2 ** 3 ** 2 = 512
     assert "result" in data and data["result"] == 512, f"Expected result 512, got {data.get('result')}"
 
+def test_create_calculation_modulus(base_url: str):
+    user_data = {
+        "first_name": "Calc",
+        "last_name": "Modulus",
+        "email": f"calc.mod{uuid4()}@example.com",
+        "username": f"calc_mod_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    }
+    token_data = register_and_login(base_url, user_data)
+    access_token = token_data["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+    url = f"{base_url}/calculations"
+    payload = {
+        "type": "modulus",
+        "inputs": [100, 7, 4],
+        "user_id": "ignored"
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    assert response.status_code == 201, f"Modulus calculation creation failed: {response.text}"
+    data = response.json()
+    # Expected result: 100 % 7 % 4 = 2
+    assert "result" in data and data["result"] == 2, f"Expected result 2, got {data.get('result')}"
+
+
 def test_list_get_update_delete_calculation(base_url: str):
     user_data = {
         "first_name": "Calc",
@@ -348,3 +373,9 @@ def test_model_power():
     calc = Calculation.create("power", dummy_user_id, [2, 3, 2])
     result = calc.get_result()
     assert result == 512, f"Power result incorrect: expected 512, got {result}"
+
+def test_model_modulus():
+    dummy_user_id = uuid4()
+    calc = Calculation.create("modulus", dummy_user_id, [100, 7, 3])
+    result = calc.get_result()
+    assert result == 2, f"Modulus result incorrect: expected 2, got {result}"
