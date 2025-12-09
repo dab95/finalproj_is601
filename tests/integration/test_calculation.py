@@ -7,6 +7,7 @@ from app.models.calculation import (
     Subtraction,
     Multiplication,
     Division,
+    Power
 )
 
 # Helper function to create a dummy user_id for testing.
@@ -59,6 +60,15 @@ def test_division_by_zero():
     division = Division(user_id=dummy_user_id(), inputs=inputs)
     with pytest.raises(ValueError, match="Cannot divide by zero."):
         division.get_result()
+
+def test_power_get_result():
+    """
+    Test that Power.get_result returns the correct product.
+    """
+    inputs = [2, 3, 2]
+    power = Power(user_id=dummy_user_id(), inputs=inputs)
+    result = power.get_result()
+    assert result == 512, f"Expected 512, got {result}"
 
 def test_calculation_factory_addition():
     """
@@ -116,6 +126,20 @@ def test_calculation_factory_division():
     assert isinstance(calc, Division), "Factory did not return a Division instance."
     assert calc.get_result() == 10, "Incorrect division result."
 
+def test_calculation_factory_power():
+    """
+    Test the Calculation.create factory method for power.
+    """
+    inputs = [2, 3, 2]
+    calc = Calculation.create(
+        calculation_type='power',
+        user_id=dummy_user_id(),
+        inputs=inputs,
+    )
+    # Expected: 2 * 3 * 2 = 512
+    assert isinstance(calc, Power), "Factory did not return a Power instance."
+    assert calc.get_result() == 512, "Incorrect power result."
+
 def test_calculation_factory_invalid_type():
     """
     Test that Calculation.create raises a ValueError for an unsupported calculation type.
@@ -150,3 +174,11 @@ def test_invalid_inputs_for_division():
     division = Division(user_id=dummy_user_id(), inputs=[10])
     with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
         division.get_result()
+
+def test_invalid_inputs_for_power():
+    """
+    Test that providing fewer than two numbers to Power.get_result raises a ValueError.
+    """
+    power = Power(user_id=dummy_user_id(), inputs=[10])
+    with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
+        power.get_result()
