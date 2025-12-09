@@ -1,13 +1,16 @@
+from app.operations import modulus
 import pytest
 import uuid
 
 from app.models.calculation import (
     Calculation,
     Addition,
+    Modulus,
     Subtraction,
     Multiplication,
     Division,
-    Power
+    Power,
+    Modulus,
 )
 
 # Helper function to create a dummy user_id for testing.
@@ -69,6 +72,25 @@ def test_power_get_result():
     power = Power(user_id=dummy_user_id(), inputs=inputs)
     result = power.get_result()
     assert result == 512, f"Expected 512, got {result}"
+
+def test_modulus_get_result():
+    """
+    Test that Modulus.get_result returns the correct remainder.
+    """
+    inputs = [100, 7, 4]
+    modulus = Modulus(user_id=dummy_user_id(), inputs=inputs)
+    # Expected: 100 / 7 / 4 = 2
+    result = modulus.get_result()
+    assert result == 2, f"Expected 2, got {result}"
+
+def test_modulus_by_zero():
+    """
+    Test that Modulus.get_result raises ValueError when dividing by zero.
+    """
+    inputs = [50, 0, 5]
+    modulus = Modulus(user_id=dummy_user_id(), inputs=inputs)
+    with pytest.raises(ValueError, match="Cannot divide by zero."):
+        modulus.get_result()
 
 def test_calculation_factory_addition():
     """
@@ -140,13 +162,27 @@ def test_calculation_factory_power():
     assert isinstance(calc, Power), "Factory did not return a Power instance."
     assert calc.get_result() == 512, "Incorrect power result."
 
+def test_calculation_factory_modulus():
+    """
+    Test the Calculation.create factory method for division.
+    """
+    inputs = [100, 7, 4]
+    calc = Calculation.create(
+        calculation_type='modulus',
+        user_id=dummy_user_id(),
+        inputs=inputs,
+    )
+    # Expected: 100 / 7 / 4 = 2
+    assert isinstance(calc, Modulus), "Factory did not return a Division instance."
+    assert calc.get_result() == 2, "Incorrect division result."
+
 def test_calculation_factory_invalid_type():
     """
     Test that Calculation.create raises a ValueError for an unsupported calculation type.
     """
     with pytest.raises(ValueError, match="Unsupported calculation type"):
         Calculation.create(
-            calculation_type='modulus',  # unsupported type
+            calculation_type='root',  # unsupported type
             user_id=dummy_user_id(),
             inputs=[10, 3],
         )
@@ -182,3 +218,11 @@ def test_invalid_inputs_for_power():
     power = Power(user_id=dummy_user_id(), inputs=[10])
     with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
         power.get_result()
+
+def test_invalid_inputs_for_modulus():
+    """
+    Test that providing fewer than two numbers to Modulus.get_result raises a ValueError.
+    """
+    modulus = Modulus(user_id=dummy_user_id(), inputs=[10])
+    with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
+        modulus.get_result()
